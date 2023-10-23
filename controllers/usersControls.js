@@ -39,7 +39,11 @@ module.exports = {
     try {
       const updateInfo = await Users.findOneAndUpdate(
         { _id: req.body.userId },
-        req.body,
+        { $set: {
+          username: req.body.username,
+           email: req.body.email 
+          } 
+        },
         { new: true }
       );
       if (!updateInfo) {
@@ -54,12 +58,42 @@ module.exports = {
   },
   async deleteUser(req, res) {
     try {
-      const userInfo = await Users.findOneAndDelete({ name: req.params.userId });
+      const userInfo = await Users.findOneAndDelete({ _id: req.params.userId });
       res.status(200).json(userInfo);
       console.log(`Deleted: ${userInfo}`)
     } catch (err) {
       console.log('Uh Oh, something went wrong');
-    res.status(500).json({ message: 'something went wrong' });
+      res.status(500).json({ message: 'something went wrong' });
+    }
+  },
+  async addFriend(req, res) {
+    try {
+      const friend = await Users.findByIdAndUpdate(
+        { _id: req.params.userId },
+        { $addToSet: { friends: req.params.friendId } },
+        { new: true }
+      );
+      if (!friend) {
+        return res.status(404).json({ message: 'No user found with this id' })
+      }
+      res.json(friend)
+    } catch (err) {
+      res.status(500).json(err)
+    }
+  },
+  async removeFriend(req, res) {
+    try {
+      const friend = await User.findByIdAndUpdate(
+        {_id: req.params.userId},
+        { $pull: { friend: req.params.friendId } },
+        { new: true }
+      );
+      if(!friend) {
+        return res.status(404).json({ message: 'No user found with this id' })
+      }
+      res.json(friend)
+    } catch(err){
+      res.status(500).json(err)
     }
   }
 }
