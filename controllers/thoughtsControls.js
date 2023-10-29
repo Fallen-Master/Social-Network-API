@@ -16,7 +16,7 @@ module.exports = {
       if (!thoughts) {
         return res.status(404).json({ message: `No thought with this ${thoughts} ID found` })
       }
-      res.json({thoughts});
+      res.json({ thoughts });
     } catch (err) {
       res.status(500)
     }
@@ -24,15 +24,15 @@ module.exports = {
   async createThoughts(req, res) {
     try {
       const createThoughts = await Thoughts.create(req.body);
-     const user = await Users.findOneAndUpdate(
-      {username: createThoughts.username},
-      {$push: {thoughts: createThoughts._id}},
-      {new: true}
+      const user = await Users.findOneAndUpdate(
+        { username: createThoughts.username },
+        { $push: { thoughts: createThoughts._id } },
+        { new: true }
       )
-      if(!user) {
+      if (!user) {
         return res.status(404).json({ message: `No user with this ${user} ID found` })
       }
-      res.json({createThoughts});
+      res.json({ createThoughts });
     } catch (err) {
       res.status(500).json({ message: err.message })
     }
@@ -65,13 +65,13 @@ module.exports = {
         return res.status(404).json({ message: 'No thought found with this id' })
       }
       const user = await Users.findOneAndUpdate(
-        {username: thoughts.username},
-        {$pull: {thoughts: thoughts._id}},
-        {new: true}
-        )
-        if(!user) {
-          return res.status(404).json({ message: `No user with this ${user} ID found` })
-        }
+        { username: thoughts.username },
+        { $pull: { thoughts: thoughts._id } },
+        { new: true }
+      )
+      if (!user) {
+        return res.status(404).json({ message: `No user with this ${user} ID found` })
+      }
       res.status(200).json(thoughts)
     } catch (err) {
       res.status(500).json({ message: 'Something went wrong' })
